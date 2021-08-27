@@ -24,14 +24,34 @@ from pathlib import Path
 from Patterns import Patterns
 
 
+def construct_vg_cli_rerender(account_id, api_key, render_id):
+    return "vg-cli rerender " + account_id + "/" + render_id + " --api-key " + api_key
+
+
+def construct_vg_cli_view_rendering(account_id, api_key, render_id):
+    return "vg-cli view-rendering " + account_id + "/" + render_id + " --api-key " + api_key
+
+
 def main():
     file_name = sys.argv[1]
     file_text = Path(file_name).read_text()
 
     # Find static values: agent_id (SDK), api key, and account id
-    agent_id = re.search(Patterns.agent_id.value, file_text).groups()[0]
-    api_key = re.search(Patterns.api_key.value, file_text).groups()[0]
-    account_id = re.search(Patterns.account_id.value, file_text).groups()[0]
+    try:
+        agent_id = re.search(Patterns.agent_id.value, file_text).groups()[0]
+    except AttributeError:
+        agent_id = "No agent id found"
+
+    try:
+        api_key = re.search(Patterns.api_key.value, file_text).groups()[0]
+    except AttributeError:
+        api_key = "No api key found"
+
+    try:
+        account_id = re.search(Patterns.account_id.value, file_text).groups()[0]
+    except AttributeError:
+        account_id = "No account id found"
+
     lines_where_exceptions_occur = []
     lines_where_errors_occur = []
     render_ids = set()
@@ -39,11 +59,11 @@ def main():
 
     for line in open(file_name):
         # Check Exceptions
-        for match in re.finditer(Patterns.exceptions.value, line):
+        for _ in re.finditer(Patterns.exceptions.value, line):
             lines_where_exceptions_occur.append(line_number)
 
         # Check Errors
-        for match in re.finditer(Patterns.errors.value, line):
+        for _ in re.finditer(Patterns.errors.value, line):
             lines_where_errors_occur.append(line_number)
 
         # Check RenderIds
@@ -55,19 +75,30 @@ def main():
         line_number = line_number + 1
 
     # Output results
+    print("----------------Results------------------------")
     print("Agent Id: " + agent_id)
     print("Account Id: " + account_id)
     print("Api Key:" + api_key)
-    print("Render Ids: " + '\n'.join(render_ids))
-    print("Exceptions occur on lines: " + str(lines_where_exceptions_occur))
-    print("Errors occur on lines: " + str(lines_where_errors_occur))
+    print("Render Ids: " + str(render_ids))
 
+    print("----------Exceptions occur on lines:-----------")
+    print(str(lines_where_exceptions_occur))
+    print("")
+
+    print("----------Errors occur on lines:-----------")
+    print(str(lines_where_errors_occur))
+    print("")
+
+
+    print("--------- vg-cli re-render scripts----------")
     for renderid in render_ids:
         print(construct_vg_cli_rerender(account_id, api_key, renderid))
+    print("")
 
-
-def construct_vg_cli_rerender(account_id, api_key, render_id):
-    return "vg-cli rerender " + account_id + "/" + render_id + " --api-key " + api_key
+    print("------- vg-cli view-render scripts --------")
+    for renderid in render_ids:
+        print(construct_vg_cli_view_rendering(account_id, api_key, renderid))
+    print("")
 
 
 main()
