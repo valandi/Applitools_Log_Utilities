@@ -4,18 +4,11 @@ This is a script to parse through a log file and output useful information.
 Usage:
 python log_analyzer </path/to/log>
 
-Information to find:
-1) SDK used
-2) All render IDs with ready-to-go vg-cli scripts
-3) All lines with Exceptions (list of all exeptions)
-4) All lines with Errors (list of all errors)
-5)
-
 TODO:
-3. Catalog what exceptions are being thrown.
-4. Catalog what errors are being thrown.
-5. ZenDesk API - find tickets that match?
-6. Come up with a definite output format
+* Catalog what exceptions are being thrown.
+* Catalog what errors are being thrown.
+* ZenDesk API - find tickets that match?
+* Find delays in execution (timeouts, latency, etc.)
 """
 
 import re
