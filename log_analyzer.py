@@ -14,7 +14,7 @@ TODO:
 import re
 import sys
 from pathlib import Path
-from Patterns import Patterns
+from constants.Patterns import Patterns
 
 
 def construct_vg_cli_rerender(account_id, api_key, render_id):
